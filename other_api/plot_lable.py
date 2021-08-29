@@ -88,9 +88,9 @@ def Draw_Box_on_faces_PIL(im, face_list, show_mode=0):
 
 def Draw_Box_on_single_face_PIL(im, location, text, show_mode=0):
     """
-    调用draw.rectangle,draw.text绘制方框
+    调用draw.rectangle,draw.text绘制方框，文字默认为方框的上一行
     :param im: PIL(Image) 图片类型
-    :param location: 百度API调用结果中人脸识别信息
+    :param location:  四元组（xyxy）
     :param show_mode: 0：不显示；1：显示图片
     :return:
     """
@@ -99,9 +99,30 @@ def Draw_Box_on_single_face_PIL(im, location, text, show_mode=0):
     draw.rectangle(location, width=lw + 1, outline=pil_color)  # plot
     font = ImageFont.truetype(font_path, size=max(round(max(im.size) / 40), 12))
     txt_width, txt_height = font.getsize(text)
-    draw.rectangle([location[0], location[1] - txt_height + 4, location[0] + txt_width, location[1]],
+    draw.rectangle([location[0], location[1], location[0] + txt_width, location[1] + txt_height+4],
                    fill=pil_color)
-    draw.text((location[0], location[1] - txt_height + 1), text, fill=pil_txt_color, font=font)
+    draw.text((location[0], location[1]), text, fill=pil_txt_color, font=font)
+
+    if show_mode != 0:
+        im.show()
+
+
+def Draw_txt_on_single_face_PIL(im, location, text, show_mode=0):
+    """
+    draw.text添加文字信息，默认在方框的下一行
+    :param im: PIL(Image) 图片类型
+    :param location: 四元组（xyxy）
+    :param show_mode: 0：不显示；1：显示图片
+    :return:
+    """
+    lw = max(int(min(im.size) / 200), 2)  # line width
+    draw = ImageDraw.Draw(im)
+    # draw.rectangle(location, width=lw + 1, outline=pil_color)  # plot
+    font = ImageFont.truetype(font_path, size=max(round(max(im.size) / 40), 12))
+    txt_width, txt_height = font.getsize(text)
+    draw.rectangle([location[0], location[3] - txt_height - 4, location[0] + txt_width, location[3]],
+                   fill=pil_color)
+    draw.text((location[0], location[3] - txt_height - 4), text, fill=pil_txt_color, font=font)
 
     if show_mode != 0:
         im.show()
@@ -112,5 +133,5 @@ def plot_time_on_pic(im):
     font = ImageFont.truetype(font_path, size=max(round(max(im.size) / 40), 12))
     txt_width, txt_height = font.getsize(label)
     draw = ImageDraw.Draw(im)
-    draw.rectangle([0, 0, txt_width, txt_height], fill=pil_color)
+    draw.rectangle([0, 0, txt_width+2, txt_height+5], fill=pil_color)
     draw.text((0, 0), label, fill=pil_txt_color, font=font)

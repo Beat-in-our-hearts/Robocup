@@ -17,9 +17,9 @@ RED_color = (0, 0, 255)
 BLUE_color = (255, 0, 0)
 GREEN_color = (0, 255, 0)
 
-Face_lib_path = "files_dir/face_lib"  # 已知的人脸库，人名与图片名称一致
-Pic_path = "files_dir/pic_path"  # 待测图片路径
-Result_path = "files_dir/result"  # 保存路径
+Face_lib_path = "../files_dir/face_lib"  # 已知的人脸库，人名与图片名称一致
+Pic_path = "../files_dir/pic_path"  # 待测图片路径
+Result_path = "../files_dir/result"  # 保存路径
 
 
 class Face_BD:

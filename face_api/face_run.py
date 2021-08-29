@@ -12,8 +12,10 @@ import cv2
 import time
 import base64
 from aip import AipFace
-from other_api.plot_lable import Draw_Box_on_faces_cv2,Draw_Box_on_faces_PIL,plot_time_on_pic
+from other_api.plot_lable import Draw_Box_on_faces_cv2, Draw_Box_on_faces_PIL, plot_time_on_pic, \
+    Draw_txt_on_single_face_PIL, Draw_Box_on_single_face_PIL
 from PIL import Image, ImageDraw, ImageFont
+
 
 class Face_BD:
     """
@@ -27,7 +29,7 @@ class Face_BD:
         self.APP_ID = '24724684'
         self.API_KEY = '1Gw70VWpThVjsfwc8myFBuA5'
         self.SECRET_KEY = 'pdbxFfZ94LzQD988L4TzGuY8iy0uqFkc'
-        self.client = AipFace(self.APP_ID, self.API_KEY, self.SECRET_KEY)#初始化连接百度API
+        self.client = AipFace(self.APP_ID, self.API_KEY, self.SECRET_KEY)  # 初始化连接百度API
 
     def find_all_faces(self, image_path, wanted_info='gender', max_face_num=10, options=None):
         """
@@ -39,7 +41,7 @@ class Face_BD:
         :return: 百度API的结果
         """
         with open(image_path, 'rb') as f:
-            image = (base64.b64encode(f.read())).decode("utf-8")#base64格式打开图片
+            image = (base64.b64encode(f.read())).decode("utf-8")  # base64格式打开图片
         imageType = "BASE64"
         # 如果无可选参数，默认只需要性别
         if options == None:
@@ -75,9 +77,9 @@ class Face_BD:
         for file in dirs:
             with open(f'{faces_lib_path}/{file}', 'rb') as f:
                 image = (base64.b64encode(f.read())).decode("utf-8")
-            info_result = self.face_lib_find(image)#获取单个人脸图的信息
+            info_result = self.face_lib_find(image)  # 获取单个人脸图的信息
             # print(info_result)
-            age = info_result['face_list'][0]["age"] # 更新内容
+            age = info_result['face_list'][0]["age"]  # 更新内容
             gender = info_result['face_list'][0]["gender"]['type']
             file_name = os.path.splitext(file)[0]
             userId = file_name
@@ -117,6 +119,7 @@ class Face_BD:
             f.close()
             filename = f"{result_path}/{time.time()}.png"
 
+            print(f"人脸搜索：{result}")
             # 图片标注方式
             if cv2_or_PIL == 'cv2':
                 img = cv2.imread(f'{pic_path}/{file}')
@@ -127,8 +130,69 @@ class Face_BD:
                 im = Image.open(f'{pic_path}/{file}')
                 plot_time_on_pic(im)
                 if result != None:
-                    Draw_Box_on_faces_PIL(im,result["face_list"],0)
+                    Draw_Box_on_faces_PIL(im, result["face_list"], 0)
                 im.save(filename)
+            print(f"{filename}:The save was successful!")
+        print("Face recognition ends...\n")
+
+    def Face_multiSearch_v2(self, pic_path, result_path, groupIdList="robocup"):
+        """
+        在一张图片中识别多个包含在人脸库中的人脸，并保存
+        针对最终版的要求修改了
+        使用PIL画图
+        :param pic_path: 待测图片路径
+        :param result_path: 保存路径
+        :param groupIdList: 云端人脸库的组别
+        :return:
+        """
+        # 待测图片的存储路径
+        dirs = os.listdir(pic_path)
+        print(f"Find {len(dirs)} files in {pic_path}:{dirs}\nFinding...")
+        # 遍历待测图片
+        for file in dirs:
+            with open(f'{pic_path}/{file}', 'rb') as f:
+                image = (base64.b64encode(f.read())).decode("utf-8")
+            f.close()
+
+            # 性别识别，保存到结果1
+            options = {"face_field": "gender", "max_face_num": 5}
+            result1 = self.client.detect(image, "BASE64", options)['result']
+
+            # 人脸对比，找到目标人脸，保存到结果2
+            options = {"max_face_num": 10, "match_threshold": 70, "quality_control": "LOW", "max_user_num": 3}
+            result2 = self.client.multiSearch(image, "BASE64", groupIdList, options)['result']
+
+            # # 确保有人脸
+            # if 'result' in result2:
+            #     result2 = result2['result']
+            # else:
+            #     result2 = None
+
+            # 图片标注
+            im = Image.open(f'{pic_path}/{file}')
+            filename = f"{result_path}/{time.time()}.png"
+
+            # 标注时间戳
+            plot_time_on_pic(im)
+
+            # 性别、人脸标注
+            if result1 != None:
+                for face in result1["face_list"]:
+                    location = [int(face['location']['left']), int(face['location']['top']),
+                                int(face['location']['left']) + int(face['location']['width']),
+                                int(face['location']['top'] + face['location']['height'])]
+                    Draw_Box_on_single_face_PIL(im, location, face["gender"]['type'])
+
+            # 目标人脸姓名标注
+            if result2 != None:
+                for face in result2['face_list']:
+                    if len(face['user_list']) != 0:
+                        location = [int(face['location']['left']), int(face['location']['top']),
+                                    int(face['location']['left']) + int(face['location']['width']),
+                                    int(face['location']['top'] + face['location']['height'])]
+                        Draw_txt_on_single_face_PIL(im, location, face['user_list'][0]['user_id'])
+
+            im.save(filename)
             print(f"{filename}:The save was successful!")
         print("Face recognition ends...\n")
 
