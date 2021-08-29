@@ -29,7 +29,7 @@ class Face_BD:
         self.SECRET_KEY = 'pdbxFfZ94LzQD988L4TzGuY8iy0uqFkc'
         self.client = AipFace(self.APP_ID, self.API_KEY, self.SECRET_KEY)#初始化连接百度API
 
-    def find_all_faces(self, image_path, wanted_info='age,gender', max_face_num=10, options=None):
+    def find_all_faces(self, image_path, wanted_info='gender', max_face_num=10, options=None):
         """
         调用了封装过的百度API，识别图片的人脸信息
         :param image_path: 图片路径，支持绝对路径和相对路径
@@ -41,7 +41,7 @@ class Face_BD:
         with open(image_path, 'rb') as f:
             image = (base64.b64encode(f.read())).decode("utf-8")#base64格式打开图片
         imageType = "BASE64"
-        # 如果无可选参数，默认只需要年龄和性别
+        # 如果无可选参数，默认只需要性别
         if options == None:
             options = {"face_field": f"{wanted_info}", "max_face_num": max_face_num}
         f.close()
@@ -83,7 +83,7 @@ class Face_BD:
             userId = file_name
             """ 如果有可选参数 """
             # user_info是人脸识别后需要打印的信息
-            options = {"user_info": f"gender:{gender};name:{file_name};age:{age}", "quality_control": "NORMAL"}
+            options = {"user_info": f"gender:{gender};name:{file_name}", "quality_control": "NORMAL"}
             """ 带参数调用人脸注册 """
             self.client.addUser(image, "BASE64", groupId, userId, options)
             f.close()

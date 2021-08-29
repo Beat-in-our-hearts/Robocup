@@ -62,7 +62,7 @@ def Draw_Box_on_faces_cv2(image, face_list, show_mode=0):
 
 def Draw_Box_on_faces_PIL(im, face_list, show_mode=0):
     """
-    调用cv2.rectangle，cv2.putText给图片做标注信息
+    调用draw.rectangle,draw.text绘制方框
     :param im: PIL(Image) 图片类型
     :param face_list: 百度API调用结果中人脸识别信息
     :param show_mode: 0：不显示；1：显示图片
@@ -82,6 +82,27 @@ def Draw_Box_on_faces_PIL(im, face_list, show_mode=0):
             draw.rectangle([location[0], location[1] - txt_height + 4, location[0] + txt_width, location[1]],
                            fill=pil_color)
             draw.text((location[0], location[1] - txt_height + 1), label, fill=pil_txt_color, font=font)
+    if show_mode != 0:
+        im.show()
+
+
+def Draw_Box_on_single_face_PIL(im, location, text, show_mode=0):
+    """
+    调用draw.rectangle,draw.text绘制方框
+    :param im: PIL(Image) 图片类型
+    :param location: 百度API调用结果中人脸识别信息
+    :param show_mode: 0：不显示；1：显示图片
+    :return:
+    """
+    lw = max(int(min(im.size) / 200), 2)  # line width
+    draw = ImageDraw.Draw(im)
+    draw.rectangle(location, width=lw + 1, outline=pil_color)  # plot
+    font = ImageFont.truetype(font_path, size=max(round(max(im.size) / 40), 12))
+    txt_width, txt_height = font.getsize(text)
+    draw.rectangle([location[0], location[1] - txt_height + 4, location[0] + txt_width, location[1]],
+                   fill=pil_color)
+    draw.text((location[0], location[1] - txt_height + 1), text, fill=pil_txt_color, font=font)
+
     if show_mode != 0:
         im.show()
 
