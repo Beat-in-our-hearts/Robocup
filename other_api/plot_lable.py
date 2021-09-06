@@ -10,7 +10,7 @@ GREEN_color = (0, 255, 0)
 pil_color = (255, 0, 0)
 pil_txt_color = (255, 255, 255)
 
-font_path = "C:\Windows\Fonts\Arial.ttf"
+font_path = "Arial.ttf"
 
 
 def Draw_Box_in_face_with_txt(image, face_list, text_info_list, show_mode=0):
