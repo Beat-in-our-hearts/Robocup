@@ -67,17 +67,18 @@ def butter_lowpass_filtfilt(data, cutoff=1500, fs=50000, order=5):
     return filtfilt(b, a, data)  # forward-backward filter
 
 
-def plot_one_box(box, im, color=(128, 128, 128), txt_color=(255, 255, 255), label=None, line_width=3, use_pil=False):
+def plot_one_box(box, im, color=(128, 128, 128), txt_color=(255, 255, 255), label=None, line_width=3, use_pil=True):
     # Plots one xyxy box on image im with label
     assert im.data.contiguous, 'Image not contiguous. Apply np.ascontiguousarray(im) to plot_on_box() input image.'
     lw = line_width or max(int(min(im.size) / 200), 2)  # line width
 
     if use_pil or not is_ascii(label):  # use PIL
+        print("PIL")
         im = Image.fromarray(im)
         draw = ImageDraw.Draw(im)
         draw.rectangle(box, width=lw + 1, outline=color)  # plot
         if label:
-            font = ImageFont.truetype("Arial.ttf", size=max(round(max(im.size) / 100), 12))
+            font = ImageFont.truetype("Arial.ttf", size=max(round(max(im.size) / 100), 16))
             txt_width, txt_height = font.getsize(label)
             draw.rectangle([box[0], box[1] - txt_height + 4, box[0] + txt_width, box[1]], fill=color)
             draw.text((box[0], box[1] - txt_height + 1), label, fill=txt_color, font=font)
