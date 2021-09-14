@@ -1,5 +1,6 @@
 import cv2
 from datetime import datetime
+import os
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -10,8 +11,9 @@ GREEN_color = (0, 255, 0)
 pil_color = (255, 0, 0)
 pil_txt_color = (255, 255, 255)
 
-font_path = "Arial.ttf"
-
+# 获取上级目录
+root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+font_path = root_path + "/Arial.ttf"
 
 def Draw_Box_in_face_with_txt(image, face_list, text_info_list, show_mode=0):
     """

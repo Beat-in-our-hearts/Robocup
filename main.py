@@ -20,13 +20,16 @@ import time
 from face_api.face_run import Face_BD
 from object_api.detect import object_find
 from other_api.del_flies import del_file
+import os
+# 获取上级目录
+root_path = os.path.dirname(__file__)
 
 # ----------------全局变量-----------------------
-Face_lib_path = "files_dir/face_lib"  # 已知的人脸库，人名与图片名称一致
-temp_path = "files_dir/temp_path"  # 临时文件夹:人脸识别的图片路径/物品识别的保存路径
-pt_path = "object_api/pt/best_xz.pt"  # 物品识别的pt保存路径
-Pic_path = "files_dir/pic_path"  # 物品识别的图片路径
-Result_path = "files_dir/result"  # 人脸识别的保存路径
+Face_lib_path = root_path + "/files_dir/face_lib"  # 已知的人脸库，人名与图片名称一致
+temp_path = root_path + "/files_dir/temp_path"  # 临时文件夹:人脸识别的图片路径/物品识别的保存路径
+pt_path = root_path + "/object_api/pt/best_xz.pt"  # 物品识别的pt保存路径
+Pic_path = root_path + "/files_dir/pic_path"  # 物品识别的图片路径
+Result_path = root_path + "/files_dir/result"  # 人脸识别的保存路径
 
 if __name__ == "__main__":
     # ---------------物品识别---------------
